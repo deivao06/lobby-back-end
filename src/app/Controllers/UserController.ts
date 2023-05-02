@@ -12,7 +12,6 @@ export class UserController {
         var body = request.body;
 
         var userExists = await this.userRepository.userExists(body.email);
-
         if(userExists) {
             return response.status(400).json({
                 errors: [
