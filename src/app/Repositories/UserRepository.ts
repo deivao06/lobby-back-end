@@ -1,4 +1,5 @@
 import { PrismaClient, User } from "@prisma/client";
+import path from "path";
 
 export class UserRepository
 {
@@ -23,14 +24,21 @@ export class UserRepository
         return user
     }
 
-    public async getAllUsers() {
-        const users = await this.prisma.user.findMany();
+    public async getAllUsers(): Promise<Omit<User, "password">[]> {
+        const users = await this.prisma.user.findMany({
+            select: {
+                id: true,
+                email: true,
+                username: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+            orderBy: {
+                id: 'asc'
+            }
+        });
 
-        var usersWithoutPassword = users.map(user => {
-            return this.exclude(user, ["password"]);
-        })
-
-        return usersWithoutPassword;
+        return users;
     }
 
     public async updateUser(userId: number, userData: Partial<User>): Promise<User | null> {
